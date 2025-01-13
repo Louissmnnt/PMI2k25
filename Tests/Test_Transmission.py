@@ -32,7 +32,7 @@ if lib_path not in sys.path:
 from transmission_lib import *
 
 #%% SIGNAL ASCII "Test" EN BINAIRE
-message_test = "Test"
+message_test = "A"
 message_bin = convert_ascii_bin(message_test, 1)
 message_ascii = convert_ascii_bin(message_bin, 2)
 print("Message test :",message_test)
@@ -48,13 +48,16 @@ print("Message binaire issue des phases :", message_bin_2)
 print("Validation :",message_bin_2 == message_bin)
 
 #%% GENERATION SIGNAL FREQUENTIEL
-montant, descendant = gene_signaux_qpsk(500,500,15000,0)
+Hz_m = 1000
+Hz_d = 500
+
+montant, descendant = gene_signaux_qpsk(Hz_m,Hz_d,15000,0)
 nps = 1000 #nombre de points par echantillon
-signal_transmis = gene_signal_transmis(montant, freq_qpsk,nps, 1)
+signal_transmis = gene_signal_transmis(montant, phases_qpsk,nps, 1)
 
 #%% EXTRACTION OF FREQUENCIES
 Fs = 15000
 for i in range(int(signal_transmis.size / nps)):
     signal_i = signal_transmis[i*nps:(i+1)*nps]
-    peak_freq, magnitude, positive_freqs = detect_frequencies(signal_i, Fs)
-    print(f"Fréquence pour le {i}ème phase qpsk : ",peak_freq)
+    freq, phase = detect_phases(signal_i, Fs)
+    print(f"Fréquence pour le {i}ème phase qpsk : ",math.degrees(phase))

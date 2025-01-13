@@ -37,6 +37,8 @@ Utilisation :
 #%% BIBLIOTHEQUES
 import numpy as np
 import matplotlib.pyplot as plt
+import math
+
 #%% DICTIONNAIRES
 # BIN / ASCII
 dict_ascii_to_bin = {chr(i): bin(i)[2:].zfill(8) for i in range(128)}
@@ -122,28 +124,28 @@ def gene_signaux_qpsk(f_montant, f_descendant, fs, show):
     all_signal_descendant = np.zeros((4, int(fs*T)))
 
     for i, phase in enumerate(qpsk):
+        
+        phi = math.radians(phase)
+        
         # Signal montant
-        signal_modulant = np.sin(2 * np.pi * phase * t)
-        signal_porteuse = np.cos(2 * np.pi * f_montant * t)
-        signal_module = (1 + 0.5 * signal_modulant) * signal_porteuse
-        all_signal_montant[i, :] = signal_module
+        signal_porteuse = np.cos(2 * np.pi * f_montant * t + phi)
+        all_signal_montant[i, :] = signal_porteuse
+        freq_m, phase_m = detect_phases(signal_porteuse, fs)
+            
         if show:
-            peak_freq, mag, freqs = detect_frequencies(signal_module, fs)
-            print(f"Phase {i}: Fréquence principale = {peak_freq}")
-            affichage_freq(signal_modulant, signal_porteuse, signal_module, mag, fs, T, phase, freqs)
+            affichage_signal(signal_porteuse, fs, T, phase_m, freq_m)
 
         # Signal descendant
         signal_porteuse = np.cos(2 * np.pi * f_descendant * t)
-        signal_module = (1 + 0.5 * signal_modulant) * signal_porteuse
-        all_signal_descendant[i, :] = signal_module
+        all_signal_descendant[i, :] = signal_porteuse
+        freq_d, phase_d = detect_phases(signal_porteuse, fs)
+        
         if show:
-            peak_freq, mag, freqs = detect_frequencies(signal_module, fs)
-            print(f"Phase {i}: Fréquence principale = {peak_freq}")
-            affichage_freq(signal_modulant, signal_porteuse, signal_module, mag, fs, T, phase, freqs)
+            affichage_signal(signal_porteuse, fs, T, phase_d, freq_d)
 
     return all_signal_montant, all_signal_descendant
 
-def affichage_freq(signal_mod, signal_porteur, signal, magnitude, Fs, T, phase, positive_freqs):
+def affichage_signal(signal, Fs, T, phase, positive_freqs):
     """
     Affiche les graphes temporels et fréquentiels pour un signal donné.
     
@@ -160,25 +162,12 @@ def affichage_freq(signal_mod, signal_porteur, signal, magnitude, Fs, T, phase, 
     t = np.linspace(0, T, int(Fs * T), endpoint=False)
 
     plt.figure(figsize=(12, 8))
-    plt.subplot(4, 1, 1)
-    plt.plot(t, signal_mod)
-    plt.title(f"Signal modulant (phase = {phase})")
-    
-    plt.subplot(4, 1, 2)
+
+    plt.subplot(2, 1, 1)
     plt.plot(t, signal_porteur)
     plt.title("Signal porteur")
-    
-    plt.subplot(4, 1, 3)
-    plt.plot(t, signal)
-    plt.title(f"Signal modulé (phase = {phase})")
-    
-    plt.subplot(4, 1, 4)
-    plt.plot(positive_freqs, magnitude)
-    plt.title("Spectre fréquentiel")
-    plt.tight_layout()
-    plt.show()
 
-def detect_frequencies(signal, fs, threshold=0.1):
+def detect_phases(signal, fs, threshold=0.1):
     """
     Identifie les fréquences dominantes d'un signal.
     
@@ -192,15 +181,19 @@ def detect_frequencies(signal, fs, threshold=0.1):
         - magnitude (array): Magnitudes spectrales.
         - positive_freqs (array): Fréquences positives.
     """
+    # Calcul de la FFT
     fft_values = np.fft.fft(signal)
-    n = len(signal)
-    frequencies = np.fft.fftfreq(n, d=1/fs)
-    magnitude = np.abs(fft_values[:n // 2])
-    positive_freqs = frequencies[:n // 2]
-    max_magnitude = np.max(magnitude)
-    significant_indices = np.where(magnitude > threshold * max_magnitude)[0]
-    freq_peaks = positive_freqs[significant_indices]
-    return freq_peaks, magnitude, positive_freqs
+    frequencies = np.fft.fftfreq(len(signal), d=1/fs)
+    positive_freqs = frequencies[:len(frequencies)//2]  # Fréquences positives
+    fft_magnitude = np.abs(fft_values[:len(frequencies)//2])  # Amplitude spectrale
+    fft_phase = np.angle(fft_values[:len(frequencies)//2])  # Phase en radians
+    
+    # Détection de la fréquence principale et de la phase associée
+    peak_index = np.argmax(fft_magnitude)  # Index du pic dans l'amplitude
+    detected_frequency = positive_freqs[peak_index]  # Fréquence détectée
+    detected_phase = fft_phase[peak_index]  # Phase associée
+        
+    return detected_frequency, detected_phase
 
 def gene_signal_transmis(all_signals, freq_qpsk, nps, show):
     """
