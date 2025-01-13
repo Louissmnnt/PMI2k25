@@ -1,14 +1,39 @@
 # -*- coding: utf-8 -*-
 """
-Auteur: 
-    
-    Louis Simonnet 
-    Lila Bourdeau
-    
-Date: 2024/12/6
+Programme de modulation et traitement de signaux QPSK
+-----------------------------------------------------
+Ce script implémente les fonctionnalités de modulation, conversion et traitement 
+de signaux utilisant le schéma QPSK (Quadrature Phase Shift Keying). Il inclut 
+également des outils pour la conversion entre représentations ASCII, binaires 
+et QPSK, ainsi que des méthodes pour générer et analyser des signaux modulés.
 
-fichier contenant les fonctions utilisées dans le main
+Auteurs:
+    Baptiste Lacotte
+    Can Kaya
+    Louis Simonnet
+    Lila Bourdeau
+
+Date de création:
+    2025/01/12
+
+Description des fonctionnalités :
+    - Conversion entre ASCII et binaire.
+    - Modulation et démodulation QPSK.
+    - Génération de signaux QPSK montants et descendants.
+    - Analyse fréquentielle et visualisation des signaux.
+    - Détection des fréquences dominantes dans le spectre des signaux.
+
+Bibliothèques requises:
+    - numpy : Manipulation de tableaux et calculs numériques.
+    - matplotlib : Visualisation graphique des signaux et spectres.
+
+Utilisation :
+    Ce programme est conçu pour des applications pédagogiques ou expérimentales 
+    en télécommunications numériques. Il peut être adapté à des projets spécifiques 
+    nécessitant une analyse ou une modulation QPSK.
+
 """
+
 #%% BIBLIOTHEQUES
 import numpy as np
 import matplotlib.pyplot as plt

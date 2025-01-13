@@ -1,20 +1,63 @@
 # -*- coding: utf-8 -*-
 """
-Created on Fri Dec  6 14:23:13 2024
+Implémentation de l'algorithme ChaCha20
+---------------------------------------
+Ce script implémente l'algorithme de chiffrement symétrique ChaCha20, conçu pour 
+fournir un chiffrement rapide, sécurisé et efficace. L'algorithme est souvent utilisé 
+dans des protocoles modernes tels que TLS pour sécuriser les communications.
 
-@author: kayac
+Auteurs:
+    Can Kaya (kayac)
+    [Ajoutez d'autres contributeurs si nécessaire]
+
+Date de création:
+    2024/12/06
+
+Description des fonctionnalités :
+    - ChaCha20 context :
+      Gestion de l'état interne, du compteur, et du nonce pour le chiffrement.
+    - Configuration initiale :
+      Génération et configuration des clés et des nonces pour ChaCha20.
+    - Fonctions principales :
+      - `quarter_round` : Application d'une seule itération de transformation sur l'état.
+      - `chacha20_setup` : Initialisation de l'état interne avec clé et nonce.
+      - `chacha20_block` : Calcul d'un bloc de chiffrement.
+      - `chacha20_encrypt` et `chacha20_decrypt` : Chiffrement et déchiffrement de texte.
+    - Tests :
+      Tests unitaires pour valider le fonctionnement des étapes fondamentales 
+      de l'algorithme.
+
+Constantes définies :
+    - `CHACHA20_STATE_SIZE` : Taille de l'état interne (16 mots de 32 bits).
+    - `CHACHA20_KEY_SIZE` : Taille de la clé (256 bits ou 32 octets).
+    - `CHACHA20_IV_SIZE` : Taille du nonce (96 bits ou 12 octets).
+    - `CHACHA20_BLOCK_SIZE` : Taille d'un bloc de sortie (512 bits ou 64 octets).
+
+Utilisation prévue :
+    1. Configurez une clé et un nonce en utilisant des fonctions hexadécimales.
+    2. Utilisez `chacha20_encrypt` pour chiffrer un message.
+    3. Utilisez `chacha20_decrypt` pour déchiffrer le message chiffré.
+
+Tests inclus :
+    - `test_quarter_round` : Vérifie le comportement de la fonction `quarter_round`.
+    - `test_state_quarter_round` : Valide les modifications dans l'état interne après 
+      l'application de transformations.
+
+Attention :
+    - Ce script est une implémentation éducative de ChaCha20. Pour un usage en 
+      production, préférez une bibliothèque de chiffrement mature et largement utilisée, 
+      telle que `cryptography` en Python.
+
 """
-
-# ChaCha20 constants
+#%% CONSTANTES
 CHACHA20_STATE_SIZE = 16
 CHACHA20_KEY_SIZE = 32
 CHACHA20_IV_SIZE = 12
 CHACHA20_BLOCK_SIZE = 64
 
-# TEST = True
 TEST = False
 
-
+#%% FONCTIONS
 class ChaCha20_ctx :
     """ChaCha20 state context"""
     def __init__(self,state,nonce) -> None:
@@ -24,16 +67,52 @@ class ChaCha20_ctx :
 
 # ChaCha20 functions
 def generate_hex_key(key) :
-    """Generate a hex key from a string"""
+    """
+    Génère une clé hexadécimale à partir d'une chaîne de caractères.
+
+    Paramètres:
+        - key (str): Chaîne de caractères ASCII à convertir en clé hexadécimale.
+
+    Retourne:
+        - str: Représentation hexadécimale de la chaîne d'entrée.
+    """
     return key.encode('utf-8').hex()
 
 def ROTL(x,n):
-    """Rotate left macro (32 bits)"""
+    """
+    Effectue une rotation circulaire vers la gauche sur un entier 32 bits.
+
+    Paramètres:
+        - x (int): Entier 32 bits à faire pivoter.
+        - n (int): Nombre de positions de rotation (0 ≤ n ≤ 31).
+
+    Retourne:
+        - int: Entier après la rotation circulaire vers la gauche.
+    """
     return (((x) << (n)) | ((x) >> (32 - (n)))) & 0xffffffff
 
 
 def chacha20_setup(ctx,key,nonce) : 
-    """ChaCha20 setup function"""
+    """
+    Initialise l'état interne (state) de l'algorithme ChaCha20 avec une clé et un nonce.
+
+    Paramètres:
+        - ctx (ChaCha20_ctx): Objet contenant l'état interne, le compteur, et le nonce.
+        - key (str): Clé hexadécimale de 256 bits (64 caractères).
+        - nonce (str): Nonce hexadécimal de 96 bits (24 caractères).
+
+    Retourne:
+        - ChaCha20_ctx: Contexte mis à jour avec l'état initialisé.
+
+    Exceptions:
+        - ValueError: Si la clé ou le nonce ne respectent pas les tailles attendues.
+
+    Remarque:
+        - Les quatre premières constantes de l'état (state[0] à state[3]) sont fixes et 
+          définies par ChaCha20 ("expand 32-byte k").
+        - Les 32 octets de la clé sont utilisés pour remplir les positions state[4] à state[11].
+        - Le nonce (12 octets) est utilisé pour remplir les positions state[13] à state[15].
+    """
     ctx.state[0] = 0x61707865
     ctx.state[1] = 0x3320646e
     ctx.state[2] = 0x79622d32
@@ -53,7 +132,19 @@ def chacha20_setup(ctx,key,nonce) :
     return ctx
 
 def quarter_round(a,b,c,d) :
-    """ChaCha20 quarter round"""
+    """
+    Applique une transformation ChaCha20 "quarter round" sur quatre entiers 32 bits.
+
+    Paramètres:
+        - a, b, c, d (int): Quatre entiers 32 bits représentant les éléments de l'état interne.
+
+    Retourne:
+        - tuple: (a, b, c, d) après transformation, sous forme d'entiers 32 bits.
+
+    Remarque:
+        - Cette transformation utilise des opérations d'addition, de XOR, et de rotation gauche.
+        - Elle est une étape fondamentale dans le calcul des blocs ChaCha20.
+    """
     a += b; d ^= a; d = ROTL(d,16)
     c += d; b ^= c; b = ROTL(b,12)
     a += b; d ^= a; d = ROTL(d,8)
@@ -62,7 +153,19 @@ def quarter_round(a,b,c,d) :
 
 
 def chacha20_block(ctx) :
-    """ChaCha20 block function"""
+    """
+    Calcule un bloc de chiffrement ChaCha20 à partir de l'état interne.
+
+    Paramètres:
+        - ctx (ChaCha20_ctx): Contexte ChaCha20 contenant l'état interne.
+
+    Retourne:
+        - ChaCha20_ctx: Contexte avec l'état mis à jour après calcul du bloc.
+
+    Remarque:
+        - Le bloc est calculé en appliquant 20 itérations de quarter rounds sur l'état interne.
+        - La sortie est utilisée pour chiffrer ou déchiffrer les données.
+    """
     x = ctx.state
     for i in range(10) :
         x[0],x[4],x[8],x[12] = quarter_round(x[0],x[4],x[8],x[12])
@@ -78,7 +181,22 @@ def chacha20_block(ctx) :
     return ctx
 
 def chacha20_encrypt(ctx,plaintext,key,nonce) :
-    """ChaCha20 encryption function"""
+    """
+    Chiffre un texte clair en utilisant l'algorithme ChaCha20.
+
+    Paramètres:
+        - ctx (ChaCha20_ctx): Contexte ChaCha20 contenant l'état interne et le compteur.
+        - plaintext (str ou bytes): Texte clair à chiffrer.
+        - key (str): Clé hexadécimale de 256 bits (64 caractères).
+        - nonce (str): Nonce hexadécimal de 96 bits (24 caractères).
+
+    Retourne:
+        - bytearray: Texte chiffré sous forme d'octets.
+
+    Remarque:
+        - Si `plaintext` est une chaîne de caractères, chaque caractère est converti en octet avant chiffrement.
+        - La fonction réutilise `chacha20_setup` pour initialiser l'état et `chacha20_block` pour calculer les blocs.
+    """
     ciphertext = bytearray()
     # print("key : ",key, "nonce : ",nonce)
     ctx = chacha20_setup(ctx, key, nonce)
@@ -96,12 +214,34 @@ def chacha20_encrypt(ctx,plaintext,key,nonce) :
 
 
 def chacha20_decrypt(ctx,ciphertext,key,nonce) :
-    """ChaCha20 decryption function"""
+    """
+    Déchiffre un texte chiffré en utilisant l'algorithme ChaCha20.
+
+    Paramètres:
+        - ctx (ChaCha20_ctx): Contexte ChaCha20 contenant l'état interne et le compteur.
+        - ciphertext (bytes): Texte chiffré sous forme d'octets.
+        - key (str): Clé hexadécimale de 256 bits (64 caractères).
+        - nonce (str): Nonce hexadécimal de 96 bits (24 caractères).
+
+    Retourne:
+        - bytearray: Texte clair déchiffré.
+
+    Remarque:
+        - Le déchiffrement ChaCha20 utilise la même opération que le chiffrement.
+    """
     return chacha20_encrypt(ctx,ciphertext,key,nonce)
 
 
 def test_quarter_round () :
-    """Test the quarter round function"""
+    """
+    Teste la fonction `quarter_round` avec des valeurs prédéfinies.
+
+    Exceptions:
+        - AssertionError: Si la fonction ne retourne pas les valeurs attendues.
+
+    Remarque:
+        - Cette fonction permet de valider le comportement correct de `quarter_round`.
+    """
     print("test_quarter_round function")
     a,b,c,d = 0x11111111,0x01020304,0x9b8d6f43,0x01234567
     a,b,c,d = quarter_round(a,b,c,d)
@@ -112,7 +252,16 @@ def test_quarter_round () :
     print("test_quarter_round : Success")
 
 def test_state_quarter_round () :
-    """Test the quarter round function on the state"""
+    """
+    Teste l'application de `quarter_round` sur l'état interne ChaCha20.
+
+    Exceptions:
+        - AssertionError: Si les valeurs de l'état interne après transformation ne correspondent pas aux attentes.
+
+    Remarque:
+        - Valide les modifications correctes dans l'état interne à des positions spécifiques.
+        - Les valeurs initiales et modifiées de l'état sont comparées à des résultats prédéfinis.
+    """
     print("test_state_quarter_round function")
     ctx = ChaCha20_ctx([0]*CHACHA20_STATE_SIZE,0)
 
@@ -155,9 +304,3 @@ def test_state_quarter_round () :
     assert c[15] == 0x91dbd320
 
     print("test_state_quarter_round : Success")
-
-
-
-
-
-
