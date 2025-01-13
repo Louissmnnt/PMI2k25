@@ -35,8 +35,9 @@ from transmission_lib import *
 message_test = "Test"
 message_bin = convert_ascii_bin(message_test, 1)
 message_ascii = convert_ascii_bin(message_bin, 2)
-print("message binaire :", message_bin)
-print("message ascii : ", message_ascii)
+print("Message test :",message_test)
+print("Message traduit en binaire :", message_bin)
+print("Message retraduit en ascii : ", message_ascii)
 print("Validation :", message_test == message_ascii)
 
 #%% SIGNAL BINAIRE MODULATION QPSK (4 phases associées)
