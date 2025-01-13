@@ -39,7 +39,7 @@ print("message binaire :", message_bin)
 print("message ascii : ", message_ascii)
 print("Validation :", message_test == message_ascii)
 
-#%% SIGNAL BINAIRE MODULATION QPSK
+#%% SIGNAL BINAIRE MODULATION QPSK (4 phases associées)
 phases_qpsk = mod_qpsk_bin(message_bin, 1)
 message_bin_2 = mod_qpsk_bin(phases_qpsk, 2)
 print("Phases associées au signal :",phases_qpsk)
