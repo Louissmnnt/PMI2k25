@@ -164,7 +164,7 @@ def affichage_signal(signal, Fs, T, phase, positive_freqs):
     plt.figure(figsize=(12, 8))
 
     plt.subplot(2, 1, 1)
-    plt.plot(t, signal_porteur)
+    plt.plot(t, signal)
     plt.title("Signal porteur")
 
 def detect_phases(signal, fs, threshold=0.1):
@@ -192,8 +192,9 @@ def detect_phases(signal, fs, threshold=0.1):
     peak_index = np.argmax(fft_magnitude)  # Index du pic dans l'amplitude
     detected_frequency = positive_freqs[peak_index]  # Fréquence détectée
     detected_phase = fft_phase[peak_index]  # Phase associée
-        
-    return detected_frequency, detected_phase
+    detected_phase_deg = math.degrees(detected_phase)+60
+    
+    return detected_frequency, detected_phase_deg
 
 def gene_signal_transmis(all_signals, freq_qpsk, nps, show):
     """
@@ -221,3 +222,65 @@ def gene_signal_transmis(all_signals, freq_qpsk, nps, show):
         plt.show()
 
     return signal_transmis
+def phases_detection(signal_transmis,Fs,nps,show):
+    """
+    Détecte les phases dans un signal transmis en divisant celui-ci en segments correspondant 
+    aux symboles transmis.
+    
+    Paramètres:
+        - signal_transmis (numpy.ndarray): Signal transmis à analyser.
+        - Fs (int): Fréquence d'échantillonnage du signal (en Hz).
+        - nps (int): Nombre d'échantillons par symbole (durée d'un symbole en échantillons).
+        - show (int): Indicateur pour afficher les phases détectées (1 pour activer, 0 pour désactiver).
+    
+    Retourne:
+        - list: Liste des phases détectées (en degrés) pour chaque symbole.
+    
+    Remarque:
+        - Le signal est segmenté en blocs de taille `nps`.
+        - La phase de chaque segment est détectée en appelant la fonction `detect_phases`.
+        - Si `show` est activé, les phases détectées sont affichées dans la console pour chaque segment.
+    """
+    phases_detected = []
+    for i in range(int(signal_transmis.size / nps)):
+        signal_i = signal_transmis[i*nps:(i+1)*nps]
+        freq, phase = detect_phases(signal_i, Fs)
+        phases_detected.append(phase)
+        if show == 1:
+            print(f"Fréquence pour le {i}ème phase qpsk : ",phase)
+        
+    return phases_detected
+
+def threshold_phases(phases_detected):
+    """
+    Corrige et quantifie les phases détectées en les ramenant aux angles QPSK standards.
+    
+    Paramètres:
+        - phases_detected (list): Liste des phases détectées (en degrés).
+    
+    Retourne:
+        - list: Liste des phases corrigées et quantifiées aux valeurs QPSK standards [45, 135, 225, 315].
+    
+    Remarque:
+        - Les phases négatives sont corrigées en les ramenant dans l'intervalle [0, 360[.
+        - Les phases sont ensuite quantifiées dans l'une des quatre valeurs QPSK :
+          45° (0-90°), 135° (90-180°), 225° (180-270°), 315° (270-360°).
+    """
+    # Liste pour stocker les phases corrigées
+    corrected_phases = []
+
+    for phase in phases_detected:
+        # Corrige les phases négatives en les ramenant dans [0, 360[
+        phase = (phase + 360) % 360
+
+        # Applique le seuil à la phase
+        if 0 <= phase < 90:
+            corrected_phases.append(45)
+        elif 90 <= phase < 180:
+            corrected_phases.append(135)
+        elif 180 <= phase < 270:
+            corrected_phases.append(225)
+        elif 270 <= phase < 360:
+            corrected_phases.append(315)
+
+    return corrected_phases
