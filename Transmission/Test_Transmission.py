@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+    # -*- coding: utf-8 -*-
 """
 Auteur: 
     
@@ -37,7 +37,7 @@ print("Message binaire issue des phases :", message_bin_2)
 print("Validation :",message_bin_2 == message_bin)
 
 #%% GENERATION SIGNAL FREQUENTIEL
-Hz_m = 1000
+Hz_m = 500
 Hz_d = 500
 Fs = 15000
 
@@ -46,7 +46,7 @@ nps = 1000 #nombre de points par echantillon
 signal_transmis = gene_signal_transmis(montant, phases_qpsk,nps, 0)
 
 #%% EXTRACTION OF PHASES
-phases_detected = phases_detection(signal_transmis,Fs,nps,0)
+phases_detected = phases_detection(signal_transmis,Fs,nps,1)
 
 #%% RECONSTRUCTION OF BINARY SIGNAL
 phases_corrected = threshold_phases(phases_detected)
