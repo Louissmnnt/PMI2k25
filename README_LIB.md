@@ -7,13 +7,13 @@ Auteurs:
 
 Date de création:  2025/01/12
 
-Ce document présente une explication détaillée des trois fichiers contenus dans la bibliothèque de notre projet PMI 2K25.
+Ce document présente une explication détaillée des trois fichiers librairies bibliothèque contenus dans chacun des dossiers des parties de notre projet PMI 2K25.
 
-Il est structuré en trois parties distinctes, chacune dédiée à un aspect clé du projet. Dans l’ordre :
+Il est structuré en trois parties distinctes, chacune étant dédiée à un aspect clé du projet. Dans l’ordre :
 
-Modèle prédictif (LSTM) : Nous examinerons la mise en œuvre et le fonctionnement du modèle prédictif basé sur les réseaux de neurones LSTM.
-Chiffrement des données (ChaCha) : Nous aborderons l’utilisation de l’algorithme de chiffrement ChaCha pour garantir la sécurité des données.
-Transmission des données : Nous conclurons avec une explication du module de transmission des données et des protocoles utilisés.
+- Modèle prédictif (LSTM) : Nous examinerons la mise en œuvre et le fonctionnement du modèle prédictif basé sur les réseaux de neurones LSTM.
+- Chiffrement des données (ChaCha) : Nous aborderons l’utilisation de l’algorithme de chiffrement ChaCha pour garantir la sécurité des données.
+- Transmission des données : Nous conclurons avec une explication du module de transmission des données et des protocoles utilisés.
 
 Ce document a pour objectif de fournir une vue d’ensemble claire et concise de chaque composant du projet, afin de faciliter sa compréhension et son utilisation.
 
