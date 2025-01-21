@@ -1,17 +1,43 @@
     # -*- coding: utf-8 -*-
 """
-Auteur: 
-    
-    Louis Simonnet 
-    Lila Bourdeau
-    
-Date: 2024/12/6
+Programme de modulation, transmission et démodulation QPSK
+----------------------------------------------------------
+Ce script met en œuvre un processus complet de modulation et transmission QPSK 
+(Quadrature Phase Shift Keying). Le programme traite des données ASCII, les 
+convertit en binaire, les module en QPSK, génère un signal fréquentiel et effectue 
+la démodulation pour récupérer le message d'origine.
 
-fichier main permettant traitement signal - ASCII to BINAIRE / BINAIRE to QPSK / génération signal fréquentiel via QPSK
+Auteurs:
+    [Indiquer les auteurs si applicable]
 
-TO DO : 
-    Freq to Binaire (QPSK inverse)
-    
+Date de création:
+    [Indiquer la date de création si disponible]
+
+Description des fonctionnalités :
+    - Conversion ASCII ↔ Binaire pour préparer les données.
+    - Modulation et démodulation des données au format QPSK (codage à 4 phases).
+    - Génération de signaux montants et descendants pour la transmission.
+    - Création d'un signal transmis basé sur la modulation QPSK.
+    - Détection et extraction des phases du signal reçu.
+    - Reconstruction du signal binaire et vérification de l'intégrité.
+    - Reconstruction du message ASCII et validation des résultats.
+
+Paramètres :
+    - Fréquence du signal montant : `Hz_m` (par défaut 500 Hz).
+    - Fréquence du signal descendant : `Hz_d` (par défaut 500 Hz).
+    - Fréquence d'échantillonnage : `Fs` (par défaut 15 kHz).
+    - Nombre de points par échantillon : `nps` (par défaut 1000).
+
+Bibliothèques requises :
+    - `transmission_lib` : Bibliothèque personnalisée contenant les fonctions 
+      nécessaires pour la modulation QPSK, la conversion et la génération de signaux.
+
+Utilisation :
+    Ce script est destiné à des applications pédagogiques ou expérimentales 
+    en télécommunications numériques. Il permet de valider les principes 
+    fondamentaux de la modulation QPSK et d'explorer le processus complet de 
+    transmission et de réception.
+
 Sources : 
   https://pysdr.org/fr/content-fr/digital_modulation.html          
   https://si.blaisepascal.fr/1t-modulation-et-demodulation-de-signaux/
