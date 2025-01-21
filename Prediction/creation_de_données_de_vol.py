@@ -1,58 +1,8 @@
-"""
-Programme de simulation détaillée de vols avec ou sans crash
-------------------------------------------------------------
-Ce script simule des vols réalistes en intégrant des données détaillées provenant des 
-boîtes noires, avec des scénarios de crash possibles. Les vols simulés sont sauvegardés 
-sous forme de fichiers CSV pour une analyse ou un apprentissage machine.
-
-Auteurs :
-    [Indiquer les auteurs si applicable]
-
-Date de création :
-    [Indiquer la date de création si disponible]
-
-Description des fonctionnalités :
-    - Simulation de vols réalistes avec des paramètres détaillés : altitude, vitesse, 
-      angle d'attaque (AoA), assiette (pitch), roulis (roll), lacet (yaw), régime moteur, etc.
-    - Intégration de scénarios de crash : défaillance des sondes Pitot, décrochage, panne hydraulique, 
-      givrage, ou panne moteur.
-    - Génération de signaux à haute résolution temporelle (données chaque milliseconde).
-    - Répartition équitable des scénarios de crash parmi un ensemble de vols simulés.
-    - Sauvegarde des données de chaque vol dans un fichier CSV pour une utilisation ultérieure.
-
-Paramètres principaux :
-    - `duration_s` : Durée d'un vol en secondes (par défaut 3600 s, soit 1 heure).
-    - `scenario` : Scénario de crash à simuler (ou `None` pour un vol normal).
-    - `num_flights` : Nombre total de vols à générer (par défaut 100).
-    - `crash_flights` : Proportion de vols avec crash (par défaut 20 % des vols).
-
-Données simulées :
-    - Altitude, vitesse, vitesse verticale, angle d'attaque, assiette, roulis, lacet.
-    - Régime moteur, température des gaz d'échappement, position des volets et du train d'atterrissage.
-    - Engagement du pilote automatique, pression hydraulique, alarmes spécifiques (décrochage, givrage).
-    - Indicateur de crash (0 pour un vol normal, 1 pour un vol avec crash).
-
-Bibliothèques requises :
-    - `numpy` : Calculs numériques et manipulation de tableaux.
-    - `pandas` : Création et sauvegarde des données sous forme de DataFrame.
-    - `os` : Gestion des répertoires et fichiers.
-
-Utilisation :
-    Ce programme est conçu pour des applications pédagogiques ou expérimentales, notamment pour :
-    - L'entraînement de modèles de machine learning à la détection de crashs ou anomalies.
-    - L'analyse statistique des scénarios de crash et des données de vol.
-    - La génération de données synthétiques réalistes pour des simulations en aéronautique.
-
-Remarques :
-    - Les fichiers générés sont sauvegardés dans le répertoire `flights`.
-    - Les scénarios de crash sont distribués de manière équitable entre les vols crashés.
-"""
-
 import numpy as np
 import pandas as pd
 import os
 
-#%% Créer un dossier pour sauvegarder les fichiers
+# Créer un dossier pour sauvegarder les fichiers
 output_folder = "flights"
 os.makedirs(output_folder, exist_ok=True)
 
@@ -176,7 +126,7 @@ def simulate_detailed_flight(flight_id, duration_s, scenario=None):
 
     return flight_data
 
-#%% Générer des vols avec répartition des crashs
+# Générer des vols avec répartition des crashs
 scenarios = ["pitot_failure", "stall", "hydraulic_failure", "icing", "engine_failure"]
 num_flights = 100  # Nombre total de vols
 crash_flights = int(num_flights * 0.2)
