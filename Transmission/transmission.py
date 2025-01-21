@@ -56,9 +56,11 @@ print("Message retraduit en ascii : ", message_ascii)
 print("Validation :", message_test == message_ascii)
 
 #%% SIGNAL BINAIRE MODULATION QPSK (4 phases associées)
+message_bin = '01010011'
 phases_qpsk = mod_qpsk_bin(message_bin, 1)
 message_bin_2 = mod_qpsk_bin(phases_qpsk, 2)
-print("Phases associées au signal :",phases_qpsk)
+print("Message binaire test :",message_bin)
+print("Phases associées via QPSK :",phases_qpsk)
 print("Message binaire issue des phases :", message_bin_2)
 print("Validation :",message_bin_2 == message_bin)
 
@@ -67,9 +69,9 @@ Hz_m = 500
 Hz_d = 500
 Fs = 15000
 
-montant, descendant = gene_signaux_qpsk(Hz_m,Hz_d,Fs,0)
+montant, descendant = gene_signaux_qpsk(Hz_m,Hz_d,Fs,1)
 nps = 1000 #nombre de points par echantillon
-signal_transmis = gene_signal_transmis(montant, phases_qpsk,nps, 0)
+signal_transmis = gene_signal_transmis(montant, phases_qpsk,nps, 1)
 
 #%% EXTRACTION OF PHASES
 phases_detected = phases_detection(signal_transmis,Fs,nps,1)
