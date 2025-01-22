@@ -162,8 +162,6 @@ def affichage_signal(signal, Fs, T, phase, positive_freqs):
     t = np.linspace(0, T, int(Fs * T), endpoint=False)
 
     plt.figure(figsize=(12, 8))
-
-    plt.subplot(2, 1, 1)
     plt.plot(t, signal)
     plt.title("Signal porteur")
 
@@ -192,7 +190,7 @@ def detect_phases(signal, fs, threshold=0.1):
     peak_index = np.argmax(fft_magnitude)  # Index du pic dans l'amplitude
     detected_frequency = positive_freqs[peak_index]  # Fréquence détectée
     detected_phase = fft_phase[peak_index]  # Phase associée
-    detected_phase_deg = math.degrees(detected_phase)+60
+    detected_phase_deg = math.degrees(detected_phase)
     
     return detected_frequency, detected_phase_deg
 

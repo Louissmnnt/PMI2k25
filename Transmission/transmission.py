@@ -65,27 +65,27 @@ print("Message binaire issue des phases :", message_bin_2)
 print("Validation :",message_bin_2 == message_bin)
 
 #%% GENERATION SIGNAL FREQUENTIEL
-Hz_m = 500
-Hz_d = 500
+Hz_m = 29 #GHz
+Hz_d = 19 #GHz
 Fs = 15000
 
 montant, descendant = gene_signaux_qpsk(Hz_m,Hz_d,Fs,1)
 nps = 1000 #nombre de points par echantillon
 signal_transmis = gene_signal_transmis(montant, phases_qpsk,nps, 1)
 
-#%% EXTRACTION OF PHASES
-phases_detected = phases_detection(signal_transmis,Fs,nps,1)
-
-#%% RECONSTRUCTION OF BINARY SIGNAL
+#%%  EXTRACTION OF PHASES AND RECONSTRUCTION OF BINARY SIGNAL
+phases_detected = phases_detection(signal_transmis,Fs,nps,0)
 phases_corrected = threshold_phases(phases_detected)
-print(phases_corrected)
-message_bin_origin = mod_qpsk_bin(phases_corrected, 2)
+message_bin_detected = mod_qpsk_bin(phases_corrected, 2)
+
+print("Phases detected :", phases_detected)
+print("Phases corrected :", phases_corrected)
 print("Message binaire issue des phases :", message_bin_origin)
 print("Message original :",message_bin_2)
-print("Validation :", message_bin_origin == message_bin_2)
+print("Validation :", message_bin_detected == message_bin_2)
 
 #%% RECONSTRUCTION OF ASCII SIGNAL
-message_ascii_origin = convert_ascii_bin(message_bin_origin, 2)
+message_ascii_origin = convert_ascii_bin(message_bin_detected, 2)
 print("Message recut traduit en binaire :", message_bin_origin)
 print("Message retraduit en ascii : ", message_ascii_origin)
-print("Validation :", message_ascii_origin == message_test)
+print("Validation :", message_ascii_origin == 'S')
