@@ -1,7 +1,3 @@
-Voici un exemple de **README rapide et clair** pour ton projet **PMI2K25 – Détection de crash d’avions** :
-
----
-
 # 🛫 PMI2K25 – Détection de Crash d’Avions
 
 ## 🧩 Description du projet
